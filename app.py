@@ -10,16 +10,14 @@ from typing import List
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from pydantic import BaseModel, EmailStr
 
-# Load credentials
-credentials = dotenv_values(".env")
+# Load env_config
+env_config = dotenv_values(".env")
 
 app = FastAPI()
 
 # ✅ CORS setup
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-]
+print("-----------------\nCORS ORIGIN:",env_config)
+origins = env_config.get("CORS_ORIGINS").split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -106,9 +104,9 @@ class EmailContent(BaseModel):
     subject: str
 
 conf = ConnectionConfig(
-    MAIL_USERNAME=credentials.get("EMAIL"),
-    MAIL_PASSWORD=credentials.get("PASS"),
-    MAIL_FROM=credentials.get("EMAIL"),
+    MAIL_USERNAME=env_config.get("EMAIL"),
+    MAIL_PASSWORD=env_config.get("PASS"),
+    MAIL_FROM=env_config.get("EMAIL"),
     MAIL_PORT=465,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_STARTTLS=False,
