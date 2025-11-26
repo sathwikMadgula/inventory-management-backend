@@ -9,15 +9,21 @@ from starlette.requests import Request
 from typing import List
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from pydantic import BaseModel, EmailStr
+import os
 
 # Load env_config
 env_config = dotenv_values(".env")
+
+EMAIL = env_config.get("EMAIL") or os.getenv("EMAIL")
+PASS = env_config.get("PASS") or os.getenv("PASS")
+CORS_ORIGINS = env_config.get("CORS_ORIGINS") or os.getenv("CORS_ORIGINS")
+
 
 app = FastAPI()
 
 # ✅ CORS setup
 print("-----------------\nCORS ORIGIN:",env_config)
-origins = env_config.get("CORS_ORIGINS").split(",")
+origins = CORS_ORIGINS.split(",")
 
 app.add_middleware(
     CORSMiddleware,
@@ -104,9 +110,9 @@ class EmailContent(BaseModel):
     subject: str
 
 conf = ConnectionConfig(
-    MAIL_USERNAME=env_config.get("EMAIL"),
-    MAIL_PASSWORD=env_config.get("PASS"),
-    MAIL_FROM=env_config.get("EMAIL"),
+    MAIL_USERNAME=EMAIL,
+    MAIL_PASSWORD=PASS,
+    MAIL_FROM=EMAIL,
     MAIL_PORT=465,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_STARTTLS=False,
